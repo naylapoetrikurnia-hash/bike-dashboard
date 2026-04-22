@@ -171,7 +171,7 @@ with tab2:
 
     st.subheader("Tren Penyewaan per Bulan")
 
-    monthly = df.set_index("dteday").resample("M")["cnt"].sum()
+    monthly = df.set_index("dteday").resample("ME")["cnt"].sum()
 
     fig, ax = plt.subplots(figsize=(10,4))
     ax.plot(monthly.index, monthly.values, linewidth=2)
