@@ -1,239 +1,158 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import streamlit as st
+import pandas as pd
+import plotly.express as px
 
-# =========================
-# CONFIG
-# =========================
-st.set_page_config(
-    page_title="Dashboard Penyewaan Sepeda",
-    layout="wide"
-)
+st.set_page_config(page_title="Bike Dashboard", layout="wide")
 
-# =========================
-# STYLE CLEAN
-# =========================
+# ================= STYLE =================
 st.markdown("""
 <style>
-.main {
-    background-color: #F9FAFB;
-}
-.block-container {
-    padding-top: 2rem;
-}
-h1, h2, h3 {
-    font-weight: 600;
-}
-.stMetric {
-    background-color: white;
-    padding: 16px;
+.card {
+    background: white;
+    padding: 20px;
     border-radius: 12px;
-    border: 1px solid #E5E7EB;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 15px;
 }
-section[data-testid="stSidebar"] {
-    background-color: #FFFFFF;
-    border-right: 1px solid #E5E7EB;
+.insight {
+    background: #eef2ff;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #4f46e5;
+    margin-top: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# LOAD DATA
-# =========================
+# ================= LOAD =================
 df = pd.read_csv("dashboard/data_day.csv")
 df["dteday"] = pd.to_datetime(df["dteday"])
 
-# =========================
-# SIDEBAR FILTER
-# =========================
-st.sidebar.header("Filter Data")
+season_map = {1:"Spring",2:"Summer",3:"Fall",4:"Winter"}
+weather_map = {1:"Clear",2:"Mist",3:"Light Rain/Snow",4:"Heavy Rain/Snow"}
 
-min_date = df["dteday"].min()
-max_date = df["dteday"].max()
+df["season"] = df["season"].replace(season_map)
+df["weathersit"] = df["weathersit"].replace(weather_map)
 
+# ================= SIDEBAR =================
+st.sidebar.title("⚙️ Filter Dashboard")
+
+# 🔥 FILTER TANGGAL (INI YANG KAMU MAU)
 date_range = st.sidebar.date_input(
-    "Rentang Tanggal",
-    [min_date, max_date]
+    "Pilih Rentang Tanggal",
+    [df["dteday"].min(), df["dteday"].max()]
 )
-
-season_list = sorted(df["season"].unique())
-weather_list = sorted(df["weathersit"].unique())
 
 season = st.sidebar.multiselect(
     "Musim",
-    options=season_list,
-    default=season_list
+    df["season"].unique(),
+    default=df["season"].unique()
 )
 
 weather = st.sidebar.multiselect(
     "Cuaca",
-    options=weather_list,
-    default=weather_list
+    df["weathersit"].unique(),
+    default=df["weathersit"].unique()
 )
 
-if st.sidebar.button("Reset Filter"):
-    st.rerun()
-
-st.sidebar.markdown("---")
-st.sidebar.caption("Gunakan filter untuk eksplorasi data")
-
-# =========================
-# APPLY FILTER
-# =========================
-if len(date_range) == 2:
-    start_date, end_date = date_range
-else:
-    start_date, end_date = min_date, max_date
-
+# FILTER
 df = df[
-    (df["dteday"] >= pd.to_datetime(start_date)) &
-    (df["dteday"] <= pd.to_datetime(end_date)) &
+    (df["dteday"] >= pd.to_datetime(date_range[0])) &
+    (df["dteday"] <= pd.to_datetime(date_range[1])) &
     (df["season"].isin(season)) &
     (df["weathersit"].isin(weather))
 ]
 
-# =========================
-# HANDLE EMPTY
-# =========================
-if df.empty:
-    st.warning("Data kosong. Ubah filter.")
-    st.stop()
+# ================= HEADER =================
+st.title("🚴 Analisis Penyewaan Sepeda (2011–2012)")
 
-# =========================
-# HEADER
-# =========================
-st.title("Dashboard Penyewaan Sepeda")
-st.caption("Analisis penggunaan sepeda berdasarkan cuaca, musim, dan waktu")
-
-# =========================
-# KPI
-# =========================
-total = df["cnt"].sum()
-avg = df["cnt"].mean()
-peak_day = df.loc[df["cnt"].idxmax(), "dteday"]
-
-col1, col2, col3 = st.columns(3)
-col1.metric("Total Penyewaan", f"{int(total):,}")
-col2.metric("Rata-rata Harian", f"{int(avg):,}")
-col3.metric("Hari Tertinggi", peak_day.strftime("%d %b %Y"))
-
-# =========================
-# TABS
-# =========================
-tab1, tab2, tab3 = st.tabs(["Overview", "Detail", "Insight"])
-
-# =========================
-# OVERVIEW
-# =========================
-with tab1:
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("Pengaruh Cuaca")
-        weather_avg = df.groupby("weathersit")["cnt"].mean().reset_index()
-
-        fig, ax = plt.subplots()
-        sns.barplot(
-            data=weather_avg,
-            x="weathersit",
-            y="cnt",
-            hue="weathersit",
-            palette="Blues",
-            legend=False,
-            ax=ax
-        )
-        plt.tight_layout()
-        st.pyplot(fig)
-
-    with col2:
-        st.subheader("Penggunaan Berdasarkan Musim")
-        season_avg = df.groupby("season")["cnt"].mean().reset_index()
-
-        fig, ax = plt.subplots()
-        sns.barplot(
-            data=season_avg,
-            x="season",
-            y="cnt",
-            hue="season",
-            palette="Greens",
-            legend=False,
-            ax=ax
-        )
-        plt.tight_layout()
-        st.pyplot(fig)
-
-# =========================
-# DETAIL
-# =========================
-with tab2:
-
-    st.subheader("Tren Penyewaan per Bulan")
-
-    monthly = df.set_index("dteday").resample("ME")["cnt"].sum()
-
-    fig, ax = plt.subplots(figsize=(10,4))
-    ax.plot(monthly.index, monthly.values, linewidth=2)
-    plt.tight_layout()
-    st.pyplot(fig)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("Hari Kerja vs Libur")
-        df["tipe_hari"] = df["workingday"].map({0:"Libur",1:"Kerja"})
-        day_avg = df.groupby("tipe_hari")["cnt"].mean().reset_index()
-
-        fig, ax = plt.subplots()
-        sns.barplot(
-            data=day_avg,
-            x="tipe_hari",
-            y="cnt",
-            hue="tipe_hari",
-            palette="coolwarm",
-            legend=False,
-            ax=ax
-        )
-        plt.tight_layout()
-        st.pyplot(fig)
-
-    with col2:
-        st.subheader("Distribusi Penyewaan")
-        fig, ax = plt.subplots()
-        sns.histplot(df["cnt"], bins=30, ax=ax)
-        plt.tight_layout()
-        st.pyplot(fig)
-
-# =========================
-# INSIGHT
-# =========================
-with tab3:
-
-    st.subheader("Ringkasan Eksekutif")
-
-    st.markdown("""
-**Temuan Utama**
-- Penyewaan meningkat saat cuaca cerah  
-- Musim Fall memiliki penyewaan tertinggi  
-- Pola musiman konsisten sepanjang tahun  
-- Aktivitas lebih tinggi pada hari kerja  
-
-**Implikasi**
-- Permintaan dapat diprediksi  
-- Faktor eksternal berpengaruh signifikan  
-
-**Rekomendasi**
-- Optimalkan kapasitas saat peak  
-- Tingkatkan promosi saat low demand  
-- Gunakan data historis untuk strategi  
+st.markdown("""
+### 🎯 Pertanyaan Bisnis
+1. Pengaruh cuaca terhadap penyewaan  
+2. Musim dengan penyewaan tertinggi & terendah  
+3. Tren penyewaan dari waktu ke waktu  
 """)
 
-# =========================
-# DOWNLOAD
-# =========================
-st.download_button(
-    label="Download Data",
-    data=df.to_csv(index=False),
-    file_name="data_clean.csv"
-)
+# ================= KPI =================
+c1,c2,c3 = st.columns(3)
+
+c1.metric("Rata-rata", int(df["cnt"].mean()))
+c2.metric("Maksimum", int(df["cnt"].max()))
+c3.metric("Total Data", len(df))
+
+st.markdown("---")
+
+# ================= 1. CUACA =================
+st.subheader("1️⃣ Pengaruh Cuaca")
+
+col1,col2,col3 = st.columns(3)
+
+col1.plotly_chart(px.scatter(df, x="temp", y="cnt", trendline="ols"), use_container_width=True)
+col2.plotly_chart(px.scatter(df, x="hum", y="cnt", trendline="ols"), use_container_width=True)
+col3.plotly_chart(px.scatter(df, x="windspeed", y="cnt", trendline="ols"), use_container_width=True)
+
+st.markdown("""
+<div class="insight">
+✔ Temperatur memiliki pengaruh paling kuat terhadap penyewaan (positif).  
+✔ Kelembapan dan angin berpengaruh negatif namun lemah.  
+✔ Artinya: cuaca hangat = demand naik signifikan.
+</div>
+""", unsafe_allow_html=True)
+
+# ================= 2. MUSIM =================
+st.subheader("2️⃣ Pola Musim")
+
+season_avg = df.groupby("season")["cnt"].mean().reset_index()
+
+st.plotly_chart(px.bar(season_avg, x="season", y="cnt", color="season"),
+                use_container_width=True)
+
+st.markdown("""
+<div class="insight">
+✔ Fall = tertinggi  
+✔ Spring = terendah  
+✔ Summer juga tinggi (peak demand period)
+</div>
+""", unsafe_allow_html=True)
+
+# ================= 3. TREND =================
+st.subheader("3️⃣ Tren Waktu")
+
+monthly = df.set_index("dteday").resample("M")["cnt"].sum().reset_index()
+
+st.plotly_chart(px.line(monthly, x="dteday", y="cnt"),
+                use_container_width=True)
+
+st.markdown("""
+<div class="insight">
+✔ Terjadi tren peningkatan dari 2011 → 2012  
+✔ Ada pola musiman (naik di pertengahan tahun)
+</div>
+""", unsafe_allow_html=True)
+
+# ================= DISTRIBUSI =================
+st.subheader("📊 Distribusi")
+
+st.plotly_chart(px.histogram(df, x="cnt"), use_container_width=True)
+
+# ================= KESIMPULAN =================
+st.markdown("---")
+st.subheader("📋 Kesimpulan")
+
+st.success("""
+Temperatur adalah faktor utama dalam meningkatkan penyewaan.  
+Musim Fall dan Summer menjadi periode dengan permintaan tertinggi.  
+Terdapat tren peningkatan dari waktu ke waktu.
+""")
+
+# ================= REKOMENDASI =================
+st.subheader("🎯 Rekomendasi")
+
+st.markdown("""
+<div class="card">
+✔ Fokuskan operasional pada musim Fall & Summer (peak demand).  
+✔ Tambahkan armada saat cuaca cerah & temperatur tinggi.  
+✔ Lakukan promosi di musim Spring (demand rendah).  
+✔ Gunakan prediksi cuaca untuk optimasi supply.
+</div>
+""", unsafe_allow_html=True)
