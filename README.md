@@ -49,25 +49,27 @@ submission/
 └── requirements.txt
 
 ## 🚀 Panduan Menjalankan Aplikasi
-### Clone Repositori
-Langkah pertama, unduh proyek ini ke komputer lokal Anda menggunakan perintah berikut:
-```
+### 1. Clone Repository
+```bash
 git clone https://github.com/naylapoetrikurnia-hash/bike-dashboard.git
+cd bike-dashboard
 ```
 
-### Instalasi Library
-Instal semua dependensi yang dibutuhkan menggunakan pip:
-```
+### 2. Instalasi Library
+```bash
 pip install -r requirements.txt
 ```
 
-### Menjalankan Dashboard
-Jalankan perintah berikut pada terminal di dalam direktori proyek:
-```
+### 3. Menjalankan Dashboard
+```bash
 streamlit run dashboard/dashboard.py
 ```
+
 atau
-```
+
+```bash
 python -m streamlit run dashboard/dashboard.py
 ```
-Aplikasi akan secara otomatis terbuka di browser default Anda.
+
+Aplikasi akan otomatis terbuka di browser pada:
+http://localhost:8501
