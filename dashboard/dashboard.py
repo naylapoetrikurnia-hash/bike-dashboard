@@ -120,7 +120,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================= LOAD DATA =================
-df = pd.read_csv("dashboard/data_day.csv")
+df = pd.read_csv("dashboard/main_data.csv")
 df["dteday"] = pd.to_datetime(df["dteday"])
 
 season_map = {1:"Spring",2:"Summer",3:"Fall",4:"Winter"}
