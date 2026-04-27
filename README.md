@@ -43,7 +43,7 @@ Hasil analisis divisualisasikan dalam bentuk **dashboard interaktif menggunakan 
 submission/
 ├── dashboard/
 │   ├── dashboard.py
-│   └── data_day.csv
+│   └── main_data.csv
 ├── notebook.ipynb
 ├── README.md
 └── requirements.txt
