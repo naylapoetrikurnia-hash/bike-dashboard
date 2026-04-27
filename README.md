@@ -54,8 +54,3 @@ submission/
 ```bash
 git clone https://github.com/naylapoetrikurnia-hash/bike-dashboard.git
 cd bike-dashboard
-
-### 2. Instalasi Library
-```bash
-pip install -r requirements.txt
-
