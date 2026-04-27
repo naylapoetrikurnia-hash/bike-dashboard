@@ -47,6 +47,7 @@ submission/
 ├── notebook.ipynb
 ├── README.md
 └── requirements.txt
+```
 
 ## 🚀 Panduan Menjalankan Aplikasi
 ### 1. Clone Repository
