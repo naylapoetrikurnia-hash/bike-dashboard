@@ -303,7 +303,16 @@ Untuk melengkapi analisis, tren waktu digunakan untuk melihat bagaimana perminta
 </div>
 """, unsafe_allow_html=True)
 
-monthly = df_filtered.set_index("dteday").resample("M")["cnt"].sum().reset_index()
+df_filtered["dteday"] = pd.to_datetime(df_filtered["dteday"])
+
+monthly = (
+    df_filtered
+    .set_index("dteday")
+    .resample("MS")   # ⬅️ GANTI "M" → "MS"
+    ["cnt"]
+    .sum()
+    .reset_index()
+)
 
 fig = px.line(monthly, x="dteday", y="cnt", markers=True)
 fig.update_traces(line=dict(color="#1e40af", width=3))
