@@ -1,73 +1,61 @@
-# Dashboard Analisis Penyewaan Sepeda
+# 🚲 Bike Sharing Data Analysis Dashboard
 
-Proyek ini merupakan analisis data Bike Sharing yang divisualisasikan dalam bentuk dashboard interaktif menggunakan Streamlit. Analisis difokuskan pada pengaruh faktor cuaca, musim, dan waktu terhadap jumlah penyewaan sepeda.
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Data Analysis](https://img.shields.io/badge/Data%20Analysis-4CAF50?style=for-the-badge)
 
-## Tujuan Analisis
+---
 
-* Mengidentifikasi pola penggunaan sepeda
-* Menganalisis pengaruh cuaca dan musim terhadap jumlah penyewaan
-* Menyajikan hasil analisis dalam bentuk dashboard interaktif
+## 📌 Deskripsi Proyek
 
-## Struktur Direktori
+Proyek ini merupakan analisis data pada **Bike Sharing Dataset** untuk memahami faktor-faktor yang memengaruhi jumlah penyewaan sepeda pada periode **2011–2012**.
 
-```
+Analisis difokuskan pada:
+- Pengaruh kondisi cuaca (temperatur, kelembapan, kecepatan angin)
+- Pola musiman penyewaan sepeda
+- Tren perubahan jumlah penyewaan dari waktu ke waktu
+
+Hasil analisis divisualisasikan dalam bentuk **dashboard interaktif menggunakan Streamlit** untuk mendukung pengambilan keputusan berbasis data (*data-driven decision*).
+
+---
+
+## 🎯 Pertanyaan Bisnis
+
+1. Bagaimana pengaruh kondisi cuaca (temperatur, kelembapan, dan kecepatan angin) terhadap jumlah penyewaan sepeda selama periode tahun 2011–2012?  
+2. Pada musim apa jumlah penyewaan sepeda paling tinggi dan paling rendah selama periode tahun 2011–2012?  
+3. Bagaimana tren perubahan jumlah penyewaan sepeda dari Januari 2011 hingga Desember 2012? 
+
+---
+
+## 🎯 Tujuan Analisis
+
+- Mengidentifikasi pola penggunaan sepeda
+- Menganalisis pengaruh cuaca terhadap jumlah penyewaan
+- Mengetahui musim dengan permintaan tertinggi dan terendah
+- Menganalisis tren penyewaan dari waktu ke waktu
+- Menyajikan hasil analisis dalam bentuk dashboard interaktif
+
+---
+
+## 📁 Struktur Direktori
+
+```bash
 submission/
 ├── dashboard/
 │   ├── dashboard.py
 │   └── data_day.csv
 ├── notebook.ipynb
-├── requirements.txt
-└── README.md
-```
+├── README.md
+└── requirements.txt
 
-## Dataset
+## 🚀 Panduan Menjalankan Aplikasi
 
-Dataset yang digunakan adalah Bike Sharing Dataset yang berisi informasi terkait:
+### 1. Clone Repository
+```bash
+git clone https://github.com/naylapoetrikurnia-hash/bike-dashboard.git
+cd bike-dashboard
 
-* Tanggal
-* Kondisi cuaca
-* Musim
-* Jumlah penyewaan sepeda
-
-Dataset utama yang digunakan pada dashboard:
-
-* data_day.csv
-
-## Proses Analisis
-
-Analisis dilakukan pada file notebook.ipynb yang mencakup:
-
-* Data cleaning dan preprocessing
-* Exploratory Data Analysis (EDA)
-* Visualisasi data
-* Penarikan insight
-
-## Insight Utama
-
-* Penyewaan sepeda cenderung lebih tinggi pada kondisi cuaca cerah
-* Musim Fall dan Summer memiliki jumlah penyewaan tertinggi
-* Aktivitas penyewaan lebih tinggi pada hari kerja
-
-## Rekomendasi
-
-* Menyediakan lebih banyak unit sepeda pada musim dengan permintaan tinggi
-* Meningkatkan strategi promosi pada periode dengan permintaan rendah
-* Memanfaatkan data historis untuk perencanaan operasional
-
-## Cara Menjalankan Dashboard
-
-1. Install dependensi:
-
-```
+### 2. Instalasi Library
+```bash
 pip install -r requirements.txt
-```
 
-2. Jalankan aplikasi:
-
-```
-streamlit run dashboard/dashboard.py
-```
-
-## Author
-
-Nayla Poetri Kurnia
