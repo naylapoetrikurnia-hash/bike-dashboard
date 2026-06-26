@@ -23,6 +23,7 @@ st.markdown("""
 .block-container {
     max-width: 1200px;
 }
+            
 
 /* HERO */
 .hero-header {
